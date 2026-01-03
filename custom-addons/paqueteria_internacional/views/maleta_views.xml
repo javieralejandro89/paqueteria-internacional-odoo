@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista List de Maletas -->
+    <record id="view_paqueteria_maleta_list" model="ir.ui.view">
+        <field name="name">paqueteria.maleta.list</field>
+        <field name="model">paqueteria.maleta</field>
+        <field name="arch" type="xml">
+            <list string="Maletas">
+                <field name="numero"/>
+                <field name="name"/>
+                <field name="color"/>
+                <field name="envio_count"/>
+                <field name="peso_total"/>
+                <field name="fecha_creacion"/>
+                <field name="admin_id"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Vista Form de Maletas (CON BOOTSTRAP) -->
+    <record id="view_paqueteria_maleta_form" model="ir.ui.view">
+        <field name="name">paqueteria.maleta.form</field>
+        <field name="model">paqueteria.maleta</field>
+        <field name="arch" type="xml">
+            <form string="Maleta">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" 
+                                name="toggle_active" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options="{'terminology': 'archive'}"/>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-cube">
+                            <field name="envio_count" widget="statinfo" string="Envíos"/>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Ej: Maleta #1 Azul Clara"/>
+                        </h1>
+                    </div>
+                    
+                    <!-- INFO MALETA -->
+                    <div class="alert alert-info" role="alert">
+                        <strong>🧳 Información de la Maleta</strong>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="numero"/>
+                            <field name="color" placeholder="Ej: Azul Clara, Negra, Roja"/>
+                        </group>
+                        <group>
+                            <field name="fecha_creacion"/>
+                            <field name="fecha_envio_id" options="{'no_create': True}"/>
+                            <field name="admin_id" options="{'no_create': True}" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <!-- RESUMEN -->
+                    <div class="alert alert-success mt-3" role="alert">
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>📦 Distribuciones:</strong>
+                                <span class="badge bg-primary ms-2 fs-5"><field name="envio_count" readonly="1"/></span>
+                            </div>
+                            <div class="col-6">
+                                <strong>⚖️ Peso Total:</strong>
+                                <span class="badge bg-warning ms-2 fs-5"><field name="peso_total" readonly="1"/> lb</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CONTENIDO DE LA MALETA -->
+                    <notebook>
+                        <page string="📦 Contenido de la Maleta">
+    <field name="distribucion_ids" readonly="1">
+        <list>
+            <field name="envio_id" string="Envío"/>
+            <field name="remitente_nombre"/>
+            <field name="provincia_id"/>
+            <field name="peso_en_maleta" string="Peso en Maleta" sum="Total"/>
+            <field name="descripcion_empaque"/>
+        </list>
+    </field>
+</page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Acción de ventana para Maletas -->
+    <record id="action_paqueteria_maleta" model="ir.actions.act_window">
+        <field name="name">Maletas</field>
+        <field name="res_model">paqueteria.maleta</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear nueva maleta
+            </p>
+            <p>
+                Organiza los envíos en maletas físicas para el transporte.
+            </p>
+        </field>
+    </record>
+    
+</odoo>

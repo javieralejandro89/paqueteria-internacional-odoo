@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista List de Envíos -->
+    <record id="view_paqueteria_envio_list" model="ir.ui.view">
+        <field name="name">paqueteria.envio.list</field>
+        <field name="model">paqueteria.envio</field>
+        <field name="arch" type="xml">
+            <list string="Envíos">
+                <field name="name"/>
+                <field name="fecha_envio_id"/>
+                <field name="remitente_nombre"/>
+                <field name="destinatario_nombre"/>
+                <field name="provincia_id"/>
+                <field name="tipo_cliente"/>
+                <field name="peso_cobrar"/>
+                <field name="maleta_count" string="🧳"/>
+                <field name="total_cobrar" sum="Total"/>
+                <field name="forma_pago"/>
+                <field name="admin_id"/>
+                <field name="estado_mexico"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Vista Form de Envíos (CON BOOTSTRAP) -->
+    <record id="view_paqueteria_envio_form" model="ir.ui.view">
+        <field name="name">paqueteria.envio.form</field>
+        <field name="model">paqueteria.envio</field>
+        <field name="arch" type="xml">
+            <form string="Envío">
+                <header>
+                    
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+    <button class="oe_stat_button" icon="fa-suitcase">
+    <field name="maleta_count" widget="statinfo" string="Maletas"/>
+</button>
+</div>
+                    
+                    <div class="oe_title">
+                    <h1>
+                        <field name="name" readonly="1"/>
+                    </h1>
+                </div>
+                
+                <!-- IMPORTAR DESDE RECEPCIÓN -->
+                <div class="alert alert-success mb-3" role="alert" invisible="id">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <strong>🔄 ¿Ya tienes una recepción registrada?</strong> 
+                            <span class="text-muted">Selecciónala abajo para copiar los datos automáticamente</span>
+                        </div>
+                        <div class="col-4">
+                            <field name="recepcion_importar_id" 
+                                   placeholder="Buscar REC-00001, REC-00002..."
+                                   options="{'no_create': True}"
+                                   class="o_field_many2one"/>
+                        </div>
+                    </div>
+                </div>
+                    
+                    <group>
+                        <group string="🇲🇽 Remitente (México)">
+                            <field name="remitente_nombre" placeholder="Nombre del cliente"/>
+                            <field name="remitente_telefono" placeholder="55-1234-5678"/>
+                            <field name="tipo_cliente" widget="radio"/>
+                        </group>
+                        
+                        <group string="🇨🇺 Destinatario (Cuba)">
+                            <field name="destinatario_nombre" placeholder="Nombre de quien recibe"/>
+                            <field name="destinatario_telefono" placeholder="53-1234-5678"/>
+                            <field name="provincia_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="⚖️ Pesos (lb)">
+                            <field name="peso_central"/>
+                            <field name="peso_etiqueta"/>
+                            <field name="peso_volumen"/>
+                            <field name="peso_cobrar" readonly="1" force_save="1" class="fw-bold text-primary"/>
+                        </group>
+                        
+                        <group string="💰 Costos Adicionales">                            
+                            <field name="costo_documentos" placeholder="Ej: $500.00"/>
+                        </group>
+                    </group>
+                    
+                    <!-- ARTÍCULOS CON IMPUESTO -->
+                    <div class="alert alert-warning mt-3" role="alert">
+                        <strong>📦 Artículos con Impuesto Aduanal</strong>
+                        <span class="text-muted ms-2">Selecciona los artículos y su cantidad</span>
+                    </div>
+                    
+                    <field name="articulo_ids">
+                        <list editable="bottom" create="true" delete="true">
+                            <field name="articulo_id" 
+                                   options="{'no_create': True}"
+                                   placeholder="Buscar artículo..."/>
+                            <field name="cantidad"/>
+                            <field name="costo_unitario" readonly="1" class="fw-bold text-primary"/>
+                            <field name="subtotal" sum="Total Impuesto" class="fw-bold text-danger"/>
+                        </list>
+                    </field>
+                    
+                    <group>
+                        <group string="💵 Cálculos">
+                            <field name="tarifa_por_lb" readonly="1"/>
+                            <field name="subtotal_envio" readonly="1"/>
+                            <field name="embalaje" readonly="1"/>
+                            <field name="impuesto_aduanal" readonly="1" class="fw-bold text-danger"/>
+                            <field name="total_cobrar" readonly="1" class="oe_subtotal_footer_separator fw-bold"/>
+                        </group>
+                        
+                        <group string="💳 Pago y Control">
+                            <field name="forma_pago"/>
+                            <field name="admin_id" options="{'no_create': True}"/>
+                            <field name="estado_mexico"/>
+                            <field name="fecha_envio_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    
+                    <!-- SECCIÓN: DISTRIBUCIÓN EN MALETAS -->
+                    <div class="alert alert-primary mt-3" role="alert">
+                        <div class="row">
+                            <div class="col-4">
+                                <strong>🧳 Distribución en Maletas</strong>
+                            </div>
+                            <div class="col-8">
+                                <span class="badge bg-info me-2">Peso Total: <field name="peso_cobrar" readonly="1"/> lb</span>
+                                <span class="badge bg-success me-2">Distribuido: <field name="peso_distribuido" readonly="1"/> lb</span>
+                                <span class="badge bg-warning">Pendiente: <field name="peso_pendiente" readonly="1"/> lb</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <field name="maleta_distribucion_ids">
+                        <list editable="bottom" create="true" delete="true">
+                            <field name="maleta_id" 
+                                   options="{'no_create': True}"
+                                   placeholder="Seleccionar maleta..."/>
+                            <field name="peso_en_maleta" 
+                                   sum="Total Distribuido"
+                                   class="fw-bold"/>
+                            <field name="descripcion_empaque" 
+                                   placeholder="Ej: 2 bolsas azules, 1 nylon transparente, 1 caja negra"/>
+                        </list>
+                    </field>
+                    
+                    <div class="alert alert-warning mt-2" role="alert" invisible="peso_pendiente == 0">
+                        <strong>⚠️ Advertencia:</strong> Aún faltan <field name="peso_pendiente" readonly="1"/> lb por distribuir en maletas
+                    </div>
+                    
+                    <div class="alert alert-success mt-2" role="alert" invisible="peso_pendiente != 0 or peso_distribuido == 0">
+                        <strong>✅ Completo:</strong> Todo el peso ha sido distribuido correctamente
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Acción de ventana para Envíos -->
+    <record id="action_paqueteria_envio" model="ir.actions.act_window">
+        <field name="name">Envíos</field>
+        <field name="res_model">paqueteria.envio</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear nuevo envío
+            </p>
+            <p>
+                Registra envíos de paquetes México-Cuba con cálculo automático de costos.
+            </p>
+        </field>
+    </record>
+    
+</odoo>

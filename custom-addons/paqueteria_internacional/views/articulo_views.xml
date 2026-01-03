@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista List de Artículos -->
+    <record id="view_paqueteria_articulo_list" model="ir.ui.view">
+        <field name="name">paqueteria.articulo.list</field>
+        <field name="model">paqueteria.articulo</field>
+        <field name="arch" type="xml">
+            <list string="Artículos con Impuesto">
+                <field name="tipo_articulo"/>
+                <field name="name"/>
+                <field name="costo_aduanal" optional="show"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Vista Form de Artículos -->
+    <record id="view_paqueteria_articulo_form" model="ir.ui.view">
+        <field name="name">paqueteria.articulo.form</field>
+        <field name="model">paqueteria.articulo</field>
+        <field name="arch" type="xml">
+            <form string="Artículo">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" 
+                                name="toggle_active" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options="{'terminology': 'archive'}"/>
+                        </button>
+                    </div>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>📦 Catálogo de Artículos con Impuesto Aduanal</strong>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="name" placeholder="Ej: iPhone 15 Pro, Laptop Dell, Mando PS5"/>
+                            <field name="tipo_articulo" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="costo_aduanal" 
+                                   invisible="tipo_articulo in ['celular', 'laptop_tablet']"
+                                   class="fw-bold text-danger"/>
+                        </group>
+                    </group>
+                    
+                    <!-- TABLA DE PRECIOS DINÁMICOS -->
+                    <div class="alert alert-success mt-3" role="alert" 
+                         invisible="tipo_articulo not in ['celular', 'laptop_tablet']">
+                        <h5>💰 Precios Dinámicos (según cliente y destino)</h5>
+                        
+                        <div class="row mt-2" invisible="tipo_articulo != 'telefono'">
+                            <div class="col-12">
+                                <strong>📱 CELULARES:</strong>
+                                <ul class="mb-0 mt-1">
+                                    <li>Cliente Normal → La Habana: <span class="badge bg-primary">$800</span> | Resto: <span class="badge bg-info">$1,000</span></li>
+                                    <li>Cliente VIP → La Habana: <span class="badge bg-success">$700</span> | Resto: <span class="badge bg-warning text-dark">$900</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-2" invisible="tipo_articulo != 'laptop_tablet'">
+                            <div class="col-12">
+                                <strong>💻 LAPTOPS/TABLETS:</strong>
+                                <ul class="mb-0 mt-1">
+                                    <li>Cliente Normal → La Habana: <span class="badge bg-primary">$1,000</span> | Resto: <span class="badge bg-info">$1,300</span></li>
+                                    <li>Cliente VIP → La Habana: <span class="badge bg-success">$800</span> | Resto: <span class="badge bg-warning text-dark">$1,100</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-3" role="alert" 
+                         invisible="tipo_articulo != 'otro'">
+                        <strong>⚠️ Precio Fijo:</strong> Este artículo usa el costo fijo definido arriba
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Acción de ventana -->
+    <record id="action_paqueteria_articulo" model="ir.actions.act_window">
+        <field name="name">Artículos con Impuesto</field>
+        <field name="res_model">paqueteria.articulo</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear nuevo artículo
+            </p>
+            <p>
+                Define el catálogo de artículos que requieren impuesto aduanal.
+            </p>
+        </field>
+    </record>
+    
+</odoo>

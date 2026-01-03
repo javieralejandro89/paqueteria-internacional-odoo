@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_paqueteria_provincia_user,paqueteria.provincia.user,model_paqueteria_provincia,base.group_user,1,1,1,1
+access_paqueteria_articulo_user,paqueteria.articulo.user,model_paqueteria_articulo,base.group_user,1,1,1,1
+access_paqueteria_recepcion_user,paqueteria.recepcion.user,model_paqueteria_recepcion,base.group_user,1,1,1,1
+access_paqueteria_fecha_envio_user,paqueteria.fecha.envio.user,model_paqueteria_fecha_envio,base.group_user,1,1,1,1
+access_paqueteria_envio_user,paqueteria.envio.user,model_paqueteria_envio,base.group_user,1,1,1,1
+access_paqueteria_envio_articulo_user,paqueteria.envio.articulo.user,model_paqueteria_envio_articulo,base.group_user,1,1,1,1
+access_paqueteria_envio_maleta_user,paqueteria.envio.maleta.user,model_paqueteria_envio_maleta,base.group_user,1,1,1,1
+access_paqueteria_maleta_user,paqueteria.maleta.user,model_paqueteria_maleta,base.group_user,1,1,1,1

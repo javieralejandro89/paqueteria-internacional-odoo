@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Provincias de Cuba -->
+        <record id="provincia_pinar_del_rio" model="paqueteria.provincia">
+            <field name="name">Pinar del Río</field>
+            <field name="code">PR</field>
+        </record>
+        
+        <record id="provincia_artemisa" model="paqueteria.provincia">
+            <field name="name">Artemisa</field>
+            <field name="code">AR</field>
+        </record>
+        
+        <record id="provincia_habana" model="paqueteria.provincia">
+            <field name="name">La Habana</field>
+            <field name="code">LH</field>
+        </record>
+        
+        <record id="provincia_mayabeque" model="paqueteria.provincia">
+            <field name="name">Mayabeque</field>
+            <field name="code">MY</field>
+        </record>
+        
+        <record id="provincia_matanzas" model="paqueteria.provincia">
+            <field name="name">Matanzas</field>
+            <field name="code">MT</field>
+        </record>
+        
+        <record id="provincia_villa_clara" model="paqueteria.provincia">
+            <field name="name">Villa Clara</field>
+            <field name="code">VC</field>
+        </record>
+        
+        <record id="provincia_cienfuegos" model="paqueteria.provincia">
+            <field name="name">Cienfuegos</field>
+            <field name="code">CF</field>
+        </record>
+        
+        <record id="provincia_sancti_spiritus" model="paqueteria.provincia">
+            <field name="name">Sancti Spíritus</field>
+            <field name="code">SS</field>
+        </record>
+        
+        <record id="provincia_ciego_de_avila" model="paqueteria.provincia">
+            <field name="name">Ciego de Ávila</field>
+            <field name="code">CA</field>
+        </record>
+        
+        <record id="provincia_camaguey" model="paqueteria.provincia">
+            <field name="name">Camagüey</field>
+            <field name="code">CM</field>
+        </record>
+        
+        <record id="provincia_las_tunas" model="paqueteria.provincia">
+            <field name="name">Las Tunas</field>
+            <field name="code">LT</field>
+        </record>
+        
+        <record id="provincia_holguin" model="paqueteria.provincia">
+            <field name="name">Holguín</field>
+            <field name="code">HG</field>
+        </record>
+        
+        <record id="provincia_granma" model="paqueteria.provincia">
+            <field name="name">Granma</field>
+            <field name="code">GR</field>
+        </record>
+        
+        <record id="provincia_santiago_de_cuba" model="paqueteria.provincia">
+            <field name="name">Santiago de Cuba</field>
+            <field name="code">SC</field>
+        </record>
+        
+        <record id="provincia_guantanamo" model="paqueteria.provincia">
+            <field name="name">Guantánamo</field>
+            <field name="code">GT</field>
+        </record>
+        
+        <record id="provincia_isla_juventud" model="paqueteria.provincia">
+            <field name="name">Isla de la Juventud</field>
+            <field name="code">IJ</field>
+        </record>
+        
+    </data>
+</odoo>

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista Kanban (Dashboard) -->
+    <record id="view_paqueteria_fecha_envio_kanban" model="ir.ui.view">
+        <field name="name">paqueteria.fecha.envio.kanban</field>
+        <field name="model">paqueteria.fecha.envio</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard">
+                <field name="fecha"/>
+                <field name="total_envios"/>
+                <field name="total_maletas"/>
+                <field name="peso_total"/>
+                <field name="total_cobrado"/>
+                <field name="provincias_destino"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card">
+                            <div class="oe_kanban_content">
+                                <!-- Header -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <strong class="o_kanban_record_title fs-4">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                                
+                                <!-- Badges de estadísticas -->
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-6 text-center">
+                                        <div class="badge bg-primary fs-5 w-100 p-2">
+                                            <i class="fa fa-cube" title="Envíos"/> <field name="total_envios"/> Envíos
+                                        </div>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <div class="badge bg-info fs-5 w-100 p-2">
+                                            <i class="fa fa-suitcase" title="Maletas"/> <field name="total_maletas"/> Maletas
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-6 text-center">
+                                        <div class="badge bg-warning text-dark fs-5 w-100 p-2">
+                                            <i class="fa fa-balance-scale" title="Peso"/> <field name="peso_total"/> lb
+                                        </div>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <div class="badge bg-success fs-5 w-100 p-2">
+                                            <i class="fa fa-dollar" title="Total"/> $<field name="total_cobrado" widget="float"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Provincias -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <small class="text-muted">
+                                            <i class="fa fa-map-marker" title="Ubicación"/> <field name="provincias_destino"/>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Vista List -->
+    <record id="view_paqueteria_fecha_envio_list" model="ir.ui.view">
+        <field name="name">paqueteria.fecha.envio.list</field>
+        <field name="model">paqueteria.fecha.envio</field>
+        <field name="arch" type="xml">
+            <list string="Fechas de Envío">
+                <field name="fecha"/>
+                <field name="name"/>
+                <field name="total_envios"/>
+                <field name="total_maletas"/>
+                <field name="peso_total"/>
+                <field name="total_cobrado" sum="Total"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Vista Form -->
+    <record id="view_paqueteria_fecha_envio_form" model="ir.ui.view">
+        <field name="name">paqueteria.fecha.envio.form</field>
+        <field name="model">paqueteria.fecha.envio</field>
+        <field name="arch" type="xml">
+            <form string="Fecha de Envío">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="fecha"/>
+                        </group>
+                    </group>
+                    
+                    <!-- RESUMEN -->
+                    <div class="alert alert-info mt-3" role="alert">
+                        <h5>📊 Resumen del Envío</h5>
+                        <div class="row mt-3">
+                            <div class="col-3 text-center">
+                                <h2 class="text-primary"><field name="total_envios" readonly="1"/></h2>
+                                <p class="mb-0">📦 Envíos</p>
+                            </div>
+                            <div class="col-3 text-center">
+                                <h2 class="text-info"><field name="total_maletas" readonly="1"/></h2>
+                                <p class="mb-0">🧳 Maletas</p>
+                            </div>
+                            <div class="col-3 text-center">
+                                <h2 class="text-warning"><field name="peso_total" readonly="1"/> lb</h2>
+                                <p class="mb-0">⚖️ Peso Total</p>
+                            </div>
+                            <div class="col-3 text-center">
+                                <h2 class="text-success">$<field name="total_cobrado" readonly="1" widget="monetary"/></h2>
+                                <p class="mb-0">💰 Total Cobrado</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- PESTAÑAS -->
+                    <notebook>
+                        <page string="📦 Envíos" name="envios">
+                            <field name="envio_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="remitente_nombre"/>
+                                    <field name="destinatario_nombre"/>
+                                    <field name="provincia_id"/>
+                                    <field name="peso_cobrar"/>
+                                    <field name="total_cobrar" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                        
+                        <page string="🧳 Maletas" name="maletas">
+                            <field name="maleta_ids" readonly="1">
+                                <list>
+                                    <field name="numero"/>
+                                    <field name="name"/>
+                                    <field name="color"/>
+                                    <field name="envio_count"/>
+                                    <field name="peso_total"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Vista Gráfica -->
+    <record id="view_paqueteria_fecha_envio_graph" model="ir.ui.view">
+        <field name="name">paqueteria.fecha.envio.graph</field>
+        <field name="model">paqueteria.fecha.envio</field>
+        <field name="arch" type="xml">
+            <graph string="Estadísticas de Envíos" type="bar">
+                <field name="fecha"/>
+                <field name="total_cobrado" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    
+    <!-- Vista Pivot -->
+    <record id="view_paqueteria_fecha_envio_pivot" model="ir.ui.view">
+        <field name="name">paqueteria.fecha.envio.pivot</field>
+        <field name="model">paqueteria.fecha.envio</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de Envíos">
+                <field name="fecha" type="row"/>
+                <field name="total_envios" type="measure"/>
+                <field name="total_cobrado" type="measure"/>
+                <field name="peso_total" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    
+    <!-- Acción de ventana -->
+    <record id="action_paqueteria_fecha_envio" model="ir.actions.act_window">
+        <field name="name">Fechas de Envío</field>
+        <field name="res_model">paqueteria.fecha.envio</field>
+        <field name="view_mode">kanban,list,form,graph,pivot</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear nueva fecha de envío
+            </p>
+            <p>
+                Organiza tus envíos y maletas por fechas específicas.
+            </p>
+        </field>
+    </record>
+    
+</odoo>

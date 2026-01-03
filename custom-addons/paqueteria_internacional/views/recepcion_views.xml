@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista List de Recepciones -->
+    <record id="view_paqueteria_recepcion_list" model="ir.ui.view">
+        <field name="name">paqueteria.recepcion.list</field>
+        <field name="model">paqueteria.recepcion</field>
+        <field name="arch" type="xml">
+            <list string="Recepciones" decoration-info="fotos_count == 0">
+                <field name="name"/>
+                <field name="fecha_recepcion"/>
+                <field name="remitente_nombre"/>
+                <field name="destinatario_nombre"/>
+                <field name="provincia_id"/>
+                <field name="peso_etiqueta"/>
+                <field name="fotos_count" string="📸"/>
+                <field name="admin_id"/>
+                <field name="estado_mexico"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Vista Form de Recepciones (CON BOOTSTRAP) -->
+    <record id="view_paqueteria_recepcion_form" model="ir.ui.view">
+        <field name="name">paqueteria.recepcion.form</field>
+        <field name="model">paqueteria.recepcion</field>
+        <field name="arch" type="xml">
+            <form string="Recepción de Paquete">
+                <header>
+                    <button name="action_ver_fotos" type="object" string="📸 Ver Fotos" 
+                            class="btn-primary" invisible="fotos_count == 0"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" 
+                                name="action_ver_fotos" icon="fa-camera">
+                            <field name="fotos_count" widget="statinfo" string="Fotos"/>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <!-- SECCIÓN: REMITENTE Y DESTINATARIO -->
+                    <div class="alert alert-info" role="alert">
+                        <strong>ℹ️ Instrucción:</strong> Registra los datos del cliente que trae el paquete
+                    </div>
+                    
+                    <group>
+                        <group string="🇲🇽 Remitente (México)">
+                            <field name="remitente_nombre" placeholder="Nombre completo del cliente"/>
+                            <field name="remitente_telefono" placeholder="55-1234-5678"/>
+                        </group>
+                        
+                        <group string="🇨🇺 Destinatario (Cuba)">
+                            <field name="destinatario_nombre" placeholder="Nombre de quien recibe"/>
+                            <field name="destinatario_telefono" placeholder="53-1234-5678"/>
+                            <field name="provincia_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    
+                    <!-- SECCIÓN: PESO Y CONTENIDO -->
+                    <div class="alert alert-warning mt-3" role="alert">
+                        <strong>⚖️ Peso:</strong> Registra el peso que pesaste y cobraste al cliente
+                    </div>
+                    
+                    <group>
+                        <group string="Peso">
+                            <field name="peso_etiqueta" class="fw-bold"/>
+                        </group>
+                        
+                        <group string="Control">
+                            <field name="admin_id" options="{'no_create': True}" readonly="1"/>
+                            <field name="estado_mexico"/>
+                            <field name="fecha_recepcion"/>
+                        </group>
+                    </group>
+                    
+                    <!-- SECCIÓN: FOTOS -->
+                    <div class="alert alert-success mt-3" role="alert">
+                        <strong>📸 Fotos:</strong> Adjunta las fotos de la mercancía recibida
+                    </div>
+                    
+                    <group string="Fotos del Paquete">
+                        <field name="fotos_ids" widget="many2many_binary" nolabel="1"/>
+                    </group>
+                    
+                    <!-- SECCIÓN: DESCRIPCIÓN -->
+                    <div class="alert alert-primary mt-3" role="alert">
+                        <strong>📝 Artículos:</strong> Lista todos los artículos del paquete (uno por línea)
+                    </div>
+                    
+                    <group string="Descripción de Artículos">
+                        <field name="descripcion_articulos" nolabel="1" 
+                               placeholder="Ejemplo:&#10;1 licuadora Oster&#10;2 pares zapatos Nike talla 9&#10;1 perfume Chanel&#10;3 paquetes café Bustelo"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Acción de ventana para Recepciones -->
+    <record id="action_paqueteria_recepcion" model="ir.actions.act_window">
+        <field name="name">Recepciones</field>
+        <field name="res_model">paqueteria.recepcion</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Registrar nueva recepción
+            </p>
+            <p>
+                Los admins regionales registran aquí los paquetes recibidos de sus clientes.
+            </p>
+        </field>
+    </record>
+    
+</odoo>

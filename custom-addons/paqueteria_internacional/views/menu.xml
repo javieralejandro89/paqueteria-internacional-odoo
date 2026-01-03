@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Menú principal -->
+    <menuitem id="menu_paqueteria_root"
+              name="Paquetería"
+              sequence="10"/>
+    
+    <!-- ========== DASHBOARD ========== -->
+    
+    <!-- Menú Fechas de Envío (Dashboard) -->
+    <menuitem id="menu_paqueteria_fechas"
+              name="Dashboard"
+              parent="menu_paqueteria_root"
+              action="action_paqueteria_fecha_envio"
+              sequence="5"/>
+    
+    <!-- ========== OPERACIONES ========== -->
+    
+    <!-- Menú Recepciones -->
+    <menuitem id="menu_paqueteria_recepciones"
+              name="Recepciones"
+              parent="menu_paqueteria_root"
+              action="action_paqueteria_recepcion"
+              sequence="10"/>
+    
+    <!-- Menú Envíos -->
+    <menuitem id="menu_paqueteria_envios"
+              name="Envíos"
+              parent="menu_paqueteria_root"
+              action="action_paqueteria_envio"
+              sequence="20"/>
+    
+    <!-- Menú Maletas -->
+    <menuitem id="menu_paqueteria_maletas"
+              name="Maletas"
+              parent="menu_paqueteria_root"
+              action="action_paqueteria_maleta"
+              sequence="30"/>
+    
+    <!-- ========== CONFIGURACIÓN ========== -->
+    
+    <!-- Menú Configuración -->
+    <menuitem id="menu_paqueteria_configuracion"
+              name="Configuración"
+              parent="menu_paqueteria_root"
+              sequence="100"/>
+    
+    <!-- Menú Artículos -->
+    <menuitem id="menu_paqueteria_articulos"
+              name="Artículos con Impuesto"
+              parent="menu_paqueteria_configuracion"
+              action="action_paqueteria_articulo"
+              sequence="5"/>
+    
+    <!-- Menú Provincias -->
+    <menuitem id="menu_paqueteria_provincia"
+              name="Provincias"
+              parent="menu_paqueteria_configuracion"
+              action="action_paqueteria_provincia"
+              sequence="10"/>
+    
+</odoo>

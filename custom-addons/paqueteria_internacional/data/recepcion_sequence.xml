@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Secuencia para número de recepción -->
+        <record id="sequence_paqueteria_recepcion" model="ir.sequence">
+            <field name="name">Secuencia Recepción Paquetería</field>
+            <field name="code">paqueteria.recepcion</field>
+            <field name="prefix">REC-</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+            <field name="implementation">standard</field>
+        </record>
+        
+    </data>
+</odoo>

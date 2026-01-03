@@ -1,0 +1,90 @@
+# ========================================
+# ODOO CORE (NO SUBIR)
+# ========================================
+odoo/
+
+# ========================================
+# PYTHON
+# ========================================
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ========================================
+# ODOO ESPECÍFICO
+# ========================================
+*.log
+*.pot
+*.po~
+filestore/
+sessions/
+
+# Configuración local
+odoo.conf
+*.conf
+
+# Database backups
+*.dump
+*.sql
+*.backup
+*.bak
+
+# ========================================
+# IDE / EDITORES
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# ========================================
+# SISTEMA OPERATIVO
+# ========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ========================================
+# TEMPORAL
+# ========================================
+*.tmp
+*.temp
+*.cache
+
+# ========================================
+# ARCHIVOS DE PRUEBA (OPCIONAL)
+# ========================================
+# Descomenta si tienes archivos de prueba que no quieres subir
+# test_data/
+# *.xlsx
+# *.csv

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista List de Provincias -->
+    <record id="view_paqueteria_provincia_list" model="ir.ui.view">
+        <field name="name">paqueteria.provincia.list</field>
+        <field name="model">paqueteria.provincia</field>
+        <field name="arch" type="xml">
+            <list string="Provincias de Cuba">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Vista Form de Provincias -->
+    <record id="view_paqueteria_provincia_form" model="ir.ui.view">
+        <field name="name">paqueteria.provincia.form</field>
+        <field name="model">paqueteria.provincia</field>
+        <field name="arch" type="xml">
+            <form string="Provincia">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                        <group>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Acción de ventana para Provincias -->
+    <record id="action_paqueteria_provincia" model="ir.actions.act_window">
+        <field name="name">Provincias</field>
+        <field name="res_model">paqueteria.provincia</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear provincia
+            </p>
+            <p>
+                Catálogo de provincias de Cuba para asignar destinos.
+            </p>
+        </field>
+    </record>
+    
+</odoo>
