@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 0;
+        }
+        .logo {
+            max-width: 300px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 48px;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        .company-name {
+            font-size: 24px;
+            color: #FFF;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .tagline {
+            font-size: 16px;
+            font-style: italic;
+            opacity: 0.8;
+        }
+        .section {
+            background: white;
+            color: #333;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #2196F3;
+            border-bottom: 3px solid #2196F3;
+            padding-bottom: 10px;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .feature {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+        .feature h3 {
+            margin-top: 0;
+            color: #2196F3;
+        }
+        .badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 5px;
+        }
+        .cta {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        .cta h2 {
+            color: white;
+            border: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #2196F3;
+            color: white;
+            padding: 10px;
+        }
+        td {
+            padding: 10px;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <!-- Logo de Servicios Becarios -->
+        <img src="icon.png" alt="Servicios Becarios" class="logo">
+        
+        <h1>📦 Paquetería Internacional</h1>
+        <p class="company-name">Servicios Becarios</p>
+        <p class="tagline">Garantía en tus trámites</p>
+        <p>Sistema profesional de envíos México-Cuba</p>
+        
+        <div>
+            <span class="badge">Odoo 19.0</span>
+            <span class="badge">LGPL-3.0</span>
+            <span class="badge">Producción</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Características Principales</h2>
+        <div class="features">
+            <div class="feature">
+                <h3>📥 Recepciones Regionales</h3>
+                <p>Control de paquetes por administrador con fotos y descripción detallada</p>
+            </div>
+            <div class="feature">
+                <h3>💰 Cálculo Automático</h3>
+                <p>Costos calculados por peso, tarifa, embalaje e impuestos aduanales</p>
+            </div>
+            <div class="feature">
+                <h3>🧳 Distribución Multi-Maleta</h3>
+                <p>Sistema de distribución con pesos personalizados y validaciones</p>
+            </div>
+            <div class="feature">
+                <h3>📊 Dashboard Financiero</h3>
+                <p>Estadísticas en tiempo real con desglose por forma de pago</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>✨ Beneficios para Servicios Becarios</h2>
+        <ul>
+            <li>✅ <strong>Automatización total:</strong> Cálculos de costos sin errores humanos</li>
+            <li>✅ <strong>Control financiero:</strong> Totales separados por efectivo y transferencia</li>
+            <li>✅ <strong>Trazabilidad completa:</strong> Seguimiento desde recepción hasta entrega</li>
+            <li>✅ <strong>Multi-administrador:</strong> Soporte para todos los estados de México</li>
+            <li>✅ <strong>Reportes visuales:</strong> Dashboard, Pivot, Gráficas de análisis</li>
+            <li>✅ <strong>16 provincias de Cuba:</strong> Cobertura total del destino</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🚀 Tarifas Dinámicas por Cliente</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo de Cliente</th>
+                    <th>La Habana</th>
+                    <th>Resto de Cuba</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Cliente Normal</strong></td>
+                    <td>$150 MXN/lb</td>
+                    <td>$180 MXN/lb</td>
+                </tr>
+                <tr>
+                    <td><strong>Cliente VIP</strong></td>
+                    <td>$140 MXN/lb</td>
+                    <td>$170 MXN/lb</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="margin-top: 15px;"><em>+ Embalaje: $50 MXN por cada 10 lb o fracción</em></p>
+    </div>
+
+    <div class="section">
+        <h2>💎 Impuestos Aduanales Automáticos</h2>
+        <div class="features">
+            <div class="feature">
+                <h3>📱 Celulares</h3>
+                <p>$700 - $1,000 MXN<br>según cliente y destino</p>
+            </div>
+            <div class="feature">
+                <h3>💻 Laptops/Tablets</h3>
+                <p>$800 - $1,300 MXN<br>según cliente y destino</p>
+            </div>
+            <div class="feature">
+                <h3>📦 Otros Artículos</h3>
+                <p>Precio fijo configurable<br>en catálogo</p>
+            </div>
+            <div class="feature">
+                <h3>📄 Documentos</h3>
+                <p>Costo adicional<br>opcional</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🗺️ Cobertura Completa</h2>
+        <p><strong>16 Provincias de Cuba pre-cargadas:</strong></p>
+        <p style="line-height: 1.8;">
+            🇨🇺 La Habana • Pinar del Río • Artemisa • Mayabeque • Matanzas • 
+            Villa Clara • Cienfuegos • Sancti Spíritus • Ciego de Ávila • 
+            Camagüey • Las Tunas • Holguín • Granma • Santiago de Cuba • 
+            Guantánamo • Isla de la Juventud
+        </p>
+    </div>
+
+    <div class="cta">
+        <h2>🚀 Optimiza tu operación con Servicios Becarios</h2>
+        <p>Sistema diseñado específicamente para la gestión profesional de envíos México-Cuba</p>
+    </div>
+
+    <div class="section">
+        <h2>📞 Información del Módulo</h2>
+        <p>📧 Email: contacto@serviciosbecarios.com</p>
+        <p>🐙 GitHub: <a href="https://github.com/javieralejandro89/paqueteria-internacional-odoo" style="color: #2196F3;">javieralejandro89/paqueteria-internacional-odoo</a></p>
+        <p>👨‍💻 Desarrollado por: Javier Alejandro Pérez</p>
+        <p>🏢 Cliente: Servicios Becarios</p>
+    </div>
+
+    <div style="text-align: center; padding: 20px; opacity: 0.8;">
+        <p><strong>Servicios Becarios - Garantía en tus trámites</strong></p>
+        <p>Hecho con ❤️ en México 🇲🇽</p>
+        <p style="font-size: 12px;">Licencia LGPL-3.0 | Odoo 19.0 | Versión 1.0.0</p>
+    </div>
+</body>
+</html>

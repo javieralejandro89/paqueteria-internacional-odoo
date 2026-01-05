@@ -1,8 +1,30 @@
-# -*- coding: utf-8 -*-
-from odoo import models, fields, api
+# Copyright 2024 Javier Alejandro Pérez <myphoneunlockers@gmail.com>
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
+
+"""Gestión completa de envíos de paquetería México-Cuba."""
+
+import logging
 import math
 
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
+from .constants import ESTADOS_MEXICO, FORMAS_PAGO, TIPOS_CLIENTE
+
+_logger = logging.getLogger(__name__)
+
+
 class PaqueteriaEnvio(models.Model):
+    """Envío de paquete con cálculo automático de costos.
+    
+    Gestiona el proceso completo de envío desde la recepción hasta
+    la distribución en maletas. Calcula automáticamente:
+    - Peso a cobrar (máximo entre peso etiqueta y volumétrico)
+    - Embalaje ($50 por cada 10 lb o fracción)
+    - Tarifas dinámicas según tipo de cliente y provincia
+    - Impuestos aduanales de artículos
+    - Total a cobrar consolidado
+    """
+    
     _name = 'paqueteria.envio'
     _description = 'Envío de Paquete'
     _order = 'fecha_envio_id desc, name desc'
@@ -12,70 +34,81 @@ class PaqueteriaEnvio(models.Model):
         required=True,
         copy=False,
         readonly=True,
-        default='Nuevo'
+        default='Nuevo',
+        index=True,
+        help='Número de envío generado automáticamente (ENV-00001)'
     )
 
-    # Campo auxiliar para importar
+    # ========== IMPORTACIÓN DESDE RECEPCIÓN ==========
+
     recepcion_importar_id = fields.Many2one(
         'paqueteria.recepcion',
         string='Importar desde Recepción',
-        help='Selecciona una recepción para copiar sus datos'
+        help='Selecciona una recepción para copiar sus datos automáticamente'
     )
     
     # ========== REMITENTE (MÉXICO) ==========
+    
     remitente_nombre = fields.Char(
         string='Remitente',
         required=True,
-        help='Nombre del cliente que envía'
+        index=True,
+        help='Nombre del cliente que envía el paquete'
     )
     
     remitente_telefono = fields.Char(
         string='Teléfono Remitente',
-        help='Teléfono del cliente en México'
+        help='Teléfono de contacto del cliente en México'
     )
     
-    tipo_cliente = fields.Selection([
-        ('normal', 'Normal'),
-        ('vip', 'VIP')
-    ], string='Tipo de Cliente', required=True, default='normal',
-       help='VIP tiene tarifa preferencial')
+    tipo_cliente = fields.Selection(
+        selection=TIPOS_CLIENTE,
+        string='Tipo de Cliente',
+        required=True,
+        default='normal',
+        help='VIP tiene tarifa preferencial: La Habana $140/lb, Resto $170/lb'
+    )
     
     # ========== DESTINATARIO (CUBA) ==========
+    
     destinatario_nombre = fields.Char(
         string='Destinatario',
         required=True,
-        help='Nombre de quien recibe en Cuba'
+        index=True,
+        help='Nombre de quien recibe el paquete en Cuba'
     )
     
     destinatario_telefono = fields.Char(
         string='Teléfono Destinatario',
-        help='Teléfono del destinatario en Cuba'
+        help='Teléfono de contacto del destinatario en Cuba'
     )
     
     provincia_id = fields.Many2one(
         'paqueteria.provincia',
         string='Provincia Destino',
         required=True,
-        help='Provincia de Cuba donde se entrega'
+        ondelete='restrict',
+        help='Provincia de Cuba donde se entregará el paquete'
     )
     
     # ========== PESOS ==========
+    
     peso_central = fields.Float(
         string='Peso en Central (lb)',
         digits=(10, 2),
-        help='Peso registrado en la central'
+        help='Peso registrado en la central (solo informativo, no afecta cobro)'
     )
     
     peso_etiqueta = fields.Float(
         string='Peso en Etiqueta (lb)',
         digits=(10, 2),
-        help='Peso indicado en la etiqueta'
+        help='Peso indicado en la etiqueta del paquete'
     )
     
     peso_volumen = fields.Float(
         string='Peso por Volumen (lb)',
         digits=(10, 2),
-        help='Peso volumétrico calculado'
+        help='Peso volumétrico calculado según dimensiones'
     )
     
     peso_cobrar = fields.Float(
@@ -83,14 +116,16 @@ class PaqueteriaEnvio(models.Model):
         compute='_compute_peso_cobrar',
         store=True,
         digits=(10, 2),
-        help='El mayor entre peso central, etiqueta y volumen'
+        help='El mayor entre peso en etiqueta y peso volumétrico'
     )
     
     # ========== COSTOS ADICIONALES ==========
+    
     articulo_ids = fields.One2many(
         'paqueteria.envio.articulo',
         'envio_id',
-        string='Artículos con Impuesto'
+        string='Artículos con Impuesto',
+        help='Artículos que requieren pago de impuesto aduanal'
     )
     
     impuesto_aduanal = fields.Float(
@@ -103,16 +138,18 @@ class PaqueteriaEnvio(models.Model):
     
     costo_documentos = fields.Float(
         string='Documentos ($)',
-        digits=(10, 2)
+        digits=(10, 2),
+        help='Costo adicional por envío de documentos (opcional)'
     )
     
     # ========== CÁLCULOS AUTOMÁTICOS ==========
+    
     embalaje = fields.Float(
         string='Embalaje ($)',
         compute='_compute_embalaje',
         store=True,
         digits=(10, 2),
-        help='$50 por cada 10 lb o fracción'
+        help='$50 MXN por cada 10 lb o fracción'
     )
     
     tarifa_por_lb = fields.Float(
@@ -120,7 +157,7 @@ class PaqueteriaEnvio(models.Model):
         compute='_compute_tarifa',
         store=True,
         digits=(10, 2),
-        help='Varía según tipo de cliente y provincia'
+        help='Varía según tipo de cliente y provincia de destino'
     )
     
     subtotal_envio = fields.Float(
@@ -136,139 +173,114 @@ class PaqueteriaEnvio(models.Model):
         compute='_compute_totales',
         store=True,
         digits=(10, 2),
-        help='Subtotal + Embalaje + Impuestos + Extras'
+        help='Subtotal + Embalaje + Impuestos + Documentos'
     )
     
     # ========== PAGO ==========
-    forma_pago = fields.Selection([
-        ('efectivo', 'Efectivo'),
-        ('transferencia', 'Transferencia')
-    ], string='Forma de Pago')
+    
+    forma_pago = fields.Selection(
+        selection=FORMAS_PAGO,
+        string='Forma de Pago',
+        help='Método de pago utilizado por el cliente'
+    )
 
     # ========== MALETA Y DISTRIBUCIÓN ==========
+    
     maleta_distribucion_ids = fields.One2many(
         'paqueteria.envio.maleta',
         'envio_id',
         string='Distribución en Maletas',
-        help='Cómo se distribuyó este envío en diferentes maletas'
+        help='Cómo se distribuyó este envío en diferentes maletas físicas'
     )
     
     maleta_count = fields.Integer(
         string='Maletas',
-        compute='_compute_maleta_count'
+        compute='_compute_maleta_count',
+        help='Cantidad de maletas en las que se distribuyó este envío'
     )
     
     peso_distribuido = fields.Float(
         string='Peso Distribuido (lb)',
         compute='_compute_peso_distribuido',
         digits=(10, 2),
-        help='Suma de pesos distribuidos en maletas'
+        help='Suma de pesos ya distribuidos en maletas'
     )
     
     peso_pendiente = fields.Float(
         string='Peso Pendiente (lb)',
         compute='_compute_peso_distribuido',
         digits=(10, 2),
-        help='Peso que falta por distribuir'
+        help='Peso que aún falta por distribuir en maletas'
     )
     
     # ========== CONTROL ==========
+    
     admin_id = fields.Many2one(
         'res.users',
         string='Admin que Procesó',
         default=lambda self: self.env.user,
-        required=True
+        required=True,
+        ondelete='restrict',
+        help='Administrador que procesó este envío'
     )
     
-    estado_mexico = fields.Selection([
-        ('aguascalientes', 'Aguascalientes'),
-        ('baja_california', 'Baja California'),
-        ('baja_california_sur', 'Baja California Sur'),
-        ('monterrey', 'Monterrey'),
-        ('campeche', 'Campeche'),
-        ('chiapas', 'Chiapas'),
-        ('chihuahua', 'Chihuahua'),
-        ('cdmx', 'Ciudad de México'),
-        ('coahuila', 'Coahuila'),
-        ('colima', 'Colima'),
-        ('durango', 'Durango'),
-        ('estado_mexico', 'Estado de México'),
-        ('guanajuato', 'Guanajuato'),
-        ('guerrero', 'Guerrero'),
-        ('hidalgo', 'Hidalgo'),
-        ('jalisco', 'Jalisco'),
-        ('michoacan', 'Michoacán'),
-        ('morelos', 'Morelos'),
-        ('nayarit', 'Nayarit'),
-        ('nuevo_leon', 'Nuevo León'),
-        ('oaxaca', 'Oaxaca'),
-        ('puebla', 'Puebla'),
-        ('puerto_vallarta', 'Puerto Vallarta'),
-        ('queretaro', 'Querétaro'),
-        ('cancun', 'Cancún'),
-        ('san_luis_potosi', 'San Luis Potosí'),
-        ('saltillo', 'Saltillo'),
-        ('sinaloa', 'Sinaloa'),
-        ('sonora', 'Sonora'),
-        ('tabasco', 'Tabasco'),
-        ('tamaulipas', 'Tamaulipas'),
-        ('texcoco', 'Texcoco'),
-        ('tijuana', 'Tijuana'),
-        ('toluca', 'Toluca'),
-        ('tlaxcala', 'Tlaxcala'),
-        ('veracruz', 'Veracruz'),
-        ('yucatan', 'Yucatán'),
-        ('zacatecas', 'Zacatecas'),
-    ], string='Estado de México', required=True,
-       help='Estado de México donde opera el admin')
+    estado_mexico = fields.Selection(
+        selection=ESTADOS_MEXICO,
+        string='Estado de México',
+        required=True,
+        help='Estado de México donde opera el administrador'
+    )
     
     fecha_envio_id = fields.Many2one(
         'paqueteria.fecha.envio',
         string='Fecha de Envío',
-        #required=True,
-        help='Selecciona la fecha de envío a la que pertenece'
+        ondelete='restrict',
+        help='Fecha de envío programada para este paquete'
     )
     
     # ========== MÉTODOS COMPUTADOS ==========
     
     @api.depends('peso_etiqueta', 'peso_volumen')
     def _compute_peso_cobrar(self):
-        """
-        Calcula el peso a cobrar como el MAYOR entre:
+        """Calcula el peso a cobrar como el máximo entre pesos.
+        
+        El peso a cobrar es el MAYOR entre:
         - peso_etiqueta
         - peso_volumen
-
-        NOTA: peso_central NO se incluye, es solo informativo
+        
+        Nota: peso_central NO se incluye, es solo informativo.
         """
         for record in self:
             record.peso_cobrar = max(
                 record.peso_etiqueta or 0,
                 record.peso_volumen or 0
             )
-    @api.onchange('peso_etiqueta', 'peso_volumen')
-    def _onchange_pesos(self):
-        """Actualiza peso_cobrar en tiempo real mientras el usuario escribe"""
-        self.peso_cobrar = max(
-           self.peso_etiqueta or 0,
-           self.peso_volumen or 0
-        )   
 
     @api.depends('maleta_distribucion_ids.peso_en_maleta')
     def _compute_maleta_count(self):
-        """Cuenta en cuántas maletas está distribuido"""
+        """Cuenta en cuántas maletas está distribuido el envío."""
         for record in self:
             record.maleta_count = len(record.maleta_distribucion_ids)
     
     @api.depends('maleta_distribucion_ids.peso_en_maleta', 'peso_cobrar')
     def _compute_peso_distribuido(self):
-        """Calcula peso distribuido y pendiente"""
+        """Calcula peso distribuido y peso pendiente por distribuir."""
         for record in self:
-            record.peso_distribuido = sum(record.maleta_distribucion_ids.mapped('peso_en_maleta'))
-            record.peso_pendiente = record.peso_cobrar - record.peso_distribuido    
+            record.peso_distribuido = sum(
+                record.maleta_distribucion_ids.mapped('peso_en_maleta')
+            )
+            record.peso_pendiente = record.peso_cobrar - record.peso_distribuido
     
     @api.onchange('recepcion_importar_id')
     def _onchange_recepcion_importar(self):
-        """Cuando seleccionas una recepción, copia sus datos automáticamente"""
+        """Importa datos automáticamente desde una recepción seleccionada.
+        
+        Copia todos los datos relevantes:
+        - Remitente y destinatario
+        - Provincia de destino
+        - Peso en etiqueta
+        - Administrador y estado
+        """
         if self.recepcion_importar_id:
             recepcion = self.recepcion_importar_id
             
@@ -287,12 +299,12 @@ class PaqueteriaEnvio(models.Model):
     
     @api.depends('peso_cobrar')
     def _compute_embalaje(self):
-        """
-        Calcula embalaje: $50 por cada 10 lb o fracción
+        """Calcula embalaje: $50 por cada 10 lb o fracción.
+        
         Ejemplos:
-        - 6.3 lb = $50
-        - 10.1 lb = $100
-        - 20.1 lb = $150
+        - 6.3 lb → $50
+        - 10.1 lb → $100
+        - 20.1 lb → $150
         """
         for record in self:
             if record.peso_cobrar > 0:
@@ -303,19 +315,20 @@ class PaqueteriaEnvio(models.Model):
     
     @api.depends('tipo_cliente', 'provincia_id')
     def _compute_tarifa(self):
-        """
-        Calcula tarifa por libra según tipo de cliente y provincia:
-        - VIP + Habana = $140
-        - VIP + Resto = $170
-        - Normal + Habana = $150
-        - Normal + Resto = $180
+        """Calcula tarifa por libra según tipo de cliente y provincia.
+        
+        Tarifas:
+        - VIP + La Habana: $140/lb
+        - VIP + Resto: $170/lb
+        - Normal + La Habana: $150/lb
+        - Normal + Resto: $180/lb
         """
         for record in self:
             if not record.provincia_id:
                 record.tarifa_por_lb = 0.0
                 continue
             
-            # Verificar si es Habana
+            # Verificar si es La Habana
             es_habana = record.provincia_id.name.lower() == 'la habana'
             
             if record.tipo_cliente == 'vip':
@@ -325,14 +338,25 @@ class PaqueteriaEnvio(models.Model):
 
     @api.depends('articulo_ids.subtotal')
     def _compute_impuesto_aduanal(self):
-        """Calcula el impuesto aduanal como suma de artículos"""
+        """Calcula el impuesto aduanal total sumando todos los artículos."""
         for record in self:
-            record.impuesto_aduanal = sum(record.articulo_ids.mapped('subtotal'))            
+            record.impuesto_aduanal = sum(
+                record.articulo_ids.mapped('subtotal')
+            )
     
-    @api.depends('peso_cobrar', 'tarifa_por_lb', 'embalaje', 
-                 'impuesto_aduanal', 'costo_documentos')
+    @api.depends(
+        'peso_cobrar',
+        'tarifa_por_lb',
+        'embalaje',
+        'impuesto_aduanal',
+        'costo_documentos'
+    )
     def _compute_totales(self):
-        """Calcula subtotal y total a cobrar"""
+        """Calcula subtotal y total a cobrar del envío.
+        
+        Subtotal: Peso × Tarifa
+        Total: Subtotal + Embalaje + Impuestos + Documentos
+        """
         for record in self:
             # Subtotal = Peso × Tarifa
             record.subtotal_envio = record.peso_cobrar * record.tarifa_por_lb
@@ -341,14 +365,42 @@ class PaqueteriaEnvio(models.Model):
             record.total_cobrar = (
                 record.subtotal_envio +
                 record.embalaje +
-                (record.impuesto_aduanal or 0) +                
+                (record.impuesto_aduanal or 0) +
                 (record.costo_documentos or 0)
             )
     
+    # ========== CRUD METHODS ==========
+    
     @api.model_create_multi
     def create(self, vals_list):
-        """Genera número de envío automático al crear"""
+        """Crea envíos generando número de secuencia automático.
+        
+        Args:
+            vals_list: Lista de diccionarios con valores para crear
+            
+        Returns:
+            Recordset de envíos creados
+            
+        Raises:
+            ValidationError: Si no se puede generar número de envío
+        """
         for vals in vals_list:
             if vals.get('name', 'Nuevo') == 'Nuevo':
-                vals['name'] = self.env['ir.sequence'].next_by_code('paqueteria.envio') or 'Nuevo'
+                sequence = self.env['ir.sequence'].next_by_code(
+                    'paqueteria.envio'
+                )
+                if not sequence:
+                    raise ValidationError(
+                        _('No se pudo generar el número de envío. '
+                          'Verifique que la secuencia esté configurada.')
+                    )
+                vals['name'] = sequence
+                
+                _logger.info(
+                    'Creando envío %s para %s → %s',
+                    sequence,
+                    vals.get('remitente_nombre'),
+                    vals.get('destinatario_nombre')
+                )
+        
         return super().create(vals_list)

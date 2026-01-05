@@ -82,9 +82,46 @@ Desktop.ini
 *.cache
 
 # ========================================
-# ARCHIVOS DE PRUEBA (OPCIONAL)
+# ODOO ADDONS (MANTENER CUSTOM-ADDONS)
 # ========================================
-# Descomenta si tienes archivos de prueba que no quieres subir
-# test_data/
-# *.xlsx
-# *.csv
+# Si tienes addons de terceros que no quieres versionar
+addons/
+enterprise/
+
+# ========================================
+# DATOS Y UPLOADS
+# ========================================
+# Archivos subidos por usuarios
+/filestore/
+/data/
+/uploads/
+
+# ========================================
+# NODE_MODULES (si usas frontend tools)
+# ========================================
+node_modules/
+package-lock.json
+yarn.lock
+
+# ========================================
+# CERTIFICADOS Y LLAVES
+# ========================================
+*.key
+*.pem
+*.crt
+*.cer
+
+# ========================================
+# ENTORNO VIRTUAL
+# ========================================
+venv/
+env/
+ENV/
+.venv/
+
+# ========================================
+# FORZAR INCLUSIÓN (IMPORTANTE)
+# ========================================
+# Asegurar que nuestro módulo SÍ se versione
+!custom-addons/
+!custom-addons/**
